@@ -1,10 +1,12 @@
 package dev.sumilation.domain.creature;
 
+import dev.sumilation.domain.entity.Position;
+
 public class Carnivore extends Creature {
     private final int attackPower;
 
-    public Carnivore(int speed, int health, int attackPower) {
-        super(speed, health);
+    public Carnivore(Position position, int speed, int health, int attackPower) {
+        super(position, speed, health);
         this.attackPower = attackPower;
     }
 

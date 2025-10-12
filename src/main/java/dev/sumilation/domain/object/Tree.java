@@ -1,5 +1,12 @@
 package dev.sumilation.domain.object;
 
-public class Tree {
+import dev.sumilation.domain.entity.Entity;
+import dev.sumilation.domain.entity.Position;
 
+public class Tree extends Entity {
+
+
+    public Tree(Position position) {
+        super(position);
+    }
 }

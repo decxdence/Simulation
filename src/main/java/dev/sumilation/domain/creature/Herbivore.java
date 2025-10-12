@@ -1,9 +1,11 @@
 package dev.sumilation.domain.creature;
 
+import dev.sumilation.domain.entity.Position;
+
 public class Herbivore extends Creature {
 
-    public Herbivore(int speed, int health) {
-        super(speed, health);
+    public Herbivore(Position position, int speed, int health) {
+        super(position, speed, health);
     }
 
     @Override
