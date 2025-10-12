@@ -20,13 +20,13 @@ public final class Renderer {
         }
     }
 
-    private char symbol(Entity e) {
-        if (e == null) return '.';
-        if (e instanceof Carnivore) return 'C';
-        if (e instanceof Herbivore) return 'H';
-        if (e instanceof Grass)  return 'G';
-        if (e instanceof Tree)  return 'T';
-        if (e instanceof Rock) return 'R';
-        return '?';
+    private String symbol(Entity e) {
+        if (e == null) return "..";
+        if (e instanceof Carnivore) return "\uD83D\uDC3A";
+        if (e instanceof Herbivore) return "\uD83D\uDC11";
+        if (e instanceof Grass)  return "\uD83C\uDF3F";
+        if (e instanceof Tree)  return "\uD83C\uDF33";
+        if (e instanceof Rock) return "\u26F0";
+        return "?";
     }
 }
