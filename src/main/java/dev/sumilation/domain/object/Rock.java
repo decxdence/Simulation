@@ -1,7 +1,7 @@
 package dev.sumilation.domain.object;
 
 import dev.sumilation.domain.entity.Entity;
-import dev.sumilation.domain.entity.Position;
+import dev.sumilation.domain.entity.geometry.Position;
 
 public class Rock extends Entity {
 

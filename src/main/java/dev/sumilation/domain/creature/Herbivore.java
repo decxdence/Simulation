@@ -1,6 +1,10 @@
 package dev.sumilation.domain.creature;
 
-import dev.sumilation.domain.entity.Position;
+import dev.sumilation.app.SimulationMap;
+import dev.sumilation.domain.entity.geometry.Direction;
+import dev.sumilation.domain.entity.geometry.Position;
+
+import java.util.*;
 
 public class Herbivore extends Creature {
 
@@ -9,8 +13,58 @@ public class Herbivore extends Creature {
     }
 
     @Override
-    void makeMove() {
-        // Move to the side with grass
-        // If grass is close consume it
+    public void makeMove(SimulationMap sim) {
+    }
+
+    public Position computeNextStep(SimulationMap sim) {
+        Deque<Position> initQueue = new ArrayDeque<>();
+        Set<Position> visited = new HashSet<>();
+        Map<Position, Position> parent = new HashMap<>();
+
+        Position start = this.getPosition();
+
+        initQueue.addLast(start);
+        visited.add(start);
+        parent.put(start, null);
+
+        Direction[] dirs = Direction.values();
+
+        while (!initQueue.isEmpty()) {
+            Position p = initQueue.pollFirst();
+
+            if (sim.isGoalForHerbivore(p)) {
+                if (p.equals(start)) {
+                    return p;
+                } else {
+                    Position step = p;
+                    Position parentStep = parent.get(step);
+
+                    while (parentStep != null && !parentStep.equals(start)) {
+                        step = parentStep;
+                        parentStep = parent.get(step);
+                    }
+                    return step;
+                }
+            }
+
+            int x = p.getX();
+            int y = p.getY();
+
+
+            for (Direction dir : dirs) {
+
+                if (sim.inBounds(x + dir.dx, y + dir.dy)) {
+                    Position pos = new Position(x + dir.dx, y + dir.dy);
+                    if (sim.isPassableForHerbivore(pos)) {
+                        if (visited.add(pos)) {
+                            parent.put(pos, p);
+                            initQueue.addLast(pos);
+                        }
+                    }
+                }
+            }
+        }
+        return null;
     }
 }
+

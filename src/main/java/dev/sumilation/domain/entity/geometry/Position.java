@@ -1,4 +1,4 @@
-package dev.sumilation.domain.entity;
+package dev.sumilation.domain.entity.geometry;
 
 import java.util.Objects;
 

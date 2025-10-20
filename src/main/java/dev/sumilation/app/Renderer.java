@@ -3,15 +3,15 @@ package dev.sumilation.app;
 import dev.sumilation.domain.creature.Carnivore;
 import dev.sumilation.domain.creature.Herbivore;
 import dev.sumilation.domain.entity.Entity;
-import dev.sumilation.domain.entity.Position;
+import dev.sumilation.domain.entity.geometry.Position;
 import dev.sumilation.domain.object.Grass;
 import dev.sumilation.domain.object.Rock;
 import dev.sumilation.domain.object.Tree;
 
 public final class Renderer {
     public void printMap(SimulationMap sim) {
-        for (int x = 0; x < sim.getWidth(); x++) {
-            for (int y = 0; y < sim.getHeight(); y++) {
+        for (int y = 0; y < sim.getHeight(); y++) {
+            for (int x = 0; x < sim.getWidth(); x++) {
                 Position p = new Position(x, y);
                 Entity e = sim.getEntityAt(p);
                 System.out.print(symbol(e));

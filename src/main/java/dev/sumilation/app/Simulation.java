@@ -4,6 +4,7 @@ public class Simulation {
 
 
     void nextTurn() {
+
     }
 
     void startSimulation() {

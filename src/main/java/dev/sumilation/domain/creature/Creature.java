@@ -1,7 +1,8 @@
 package dev.sumilation.domain.creature;
 
+import dev.sumilation.app.SimulationMap;
 import dev.sumilation.domain.entity.Entity;
-import dev.sumilation.domain.entity.Position;
+import dev.sumilation.domain.entity.geometry.Position;
 
 public abstract class Creature extends Entity {
     private final int speed;
@@ -25,6 +26,6 @@ public abstract class Creature extends Entity {
         this.health = health;
     }
 
-    void makeMove() {
+    void makeMove(SimulationMap sim) {
     }
 }

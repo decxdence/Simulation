@@ -1,6 +1,7 @@
 package dev.sumilation.domain.creature;
 
-import dev.sumilation.domain.entity.Position;
+import dev.sumilation.app.SimulationMap;
+import dev.sumilation.domain.entity.geometry.Position;
 
 public class Carnivore extends Creature {
     private final int attackPower;
@@ -15,7 +16,7 @@ public class Carnivore extends Creature {
     }
 
     @Override
-    void makeMove() {
+    void makeMove(SimulationMap sim) {
         // Move to prey
         // If can bite --> bite prey (deal damage (attackPower)
         // if prey has 0 hp --> death
