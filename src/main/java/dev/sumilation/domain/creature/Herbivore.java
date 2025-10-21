@@ -1,8 +1,10 @@
 package dev.sumilation.domain.creature;
 
 import dev.sumilation.app.SimulationMap;
+import dev.sumilation.domain.entity.Entity;
 import dev.sumilation.domain.entity.geometry.Direction;
 import dev.sumilation.domain.entity.geometry.Position;
+import dev.sumilation.domain.object.Grass;
 
 import java.util.*;
 
@@ -12,8 +14,22 @@ public class Herbivore extends Creature {
         super(position, speed, health);
     }
 
+
     @Override
     public void makeMove(SimulationMap sim) {
+        Position next = computeNextStep(sim);
+
+        if (next == null) {
+            return;
+        }
+
+        if (sim.getEntityAt(next) instanceof Grass) {
+            sim.getWorldMap().remove(next);
+
+        }
+
+        this.moveTo(next, sim);
+
     }
 
     public Position computeNextStep(SimulationMap sim) {
@@ -47,8 +63,8 @@ public class Herbivore extends Creature {
                 }
             }
 
-            int x = p.getX();
-            int y = p.getY();
+            int x = p.x();
+            int y = p.y();
 
 
             for (Direction dir : dirs) {

@@ -16,7 +16,7 @@ public class Carnivore extends Creature {
     }
 
     @Override
-    void makeMove(SimulationMap sim) {
+    public void makeMove(SimulationMap sim) {
         // Move to prey
         // If can bite --> bite prey (deal damage (attackPower)
         // if prey has 0 hp --> death

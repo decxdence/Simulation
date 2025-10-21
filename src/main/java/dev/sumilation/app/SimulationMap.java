@@ -21,13 +21,17 @@ public class SimulationMap {
         this.width = width;
         this.height = height;
 
+        /*
         WorldMap.put(new Position(0, 0), new Herbivore(new Position(0, 0), 2, 10));
+
         WorldMap.put(new Position(1, 1), new Rock(new Position(1, 1)));
         WorldMap.put(new Position(2, 2), new Tree(new Position(2, 2)));
         WorldMap.put(new Position(3, 4), new Tree(new Position(3, 4)));
         WorldMap.put(new Position(3, 3), new Tree(new Position(3, 3)));
         WorldMap.put(new Position(4, 4), new Grass(new Position(4, 4)));
-        // initMap();
+
+         */
+        initMap();
 
 
     }
@@ -61,9 +65,9 @@ public class SimulationMap {
                     WorldMap.put(new Position(x, y), new Herbivore(new Position(x, y), 2, 10));
                 } else if (number >= 84 && number < 91) {
                     WorldMap.put(new Position(x, y), new Tree(new Position(x, y)));
-                } else if (number >= 91 && number < 96) {
-                    WorldMap.put(new Position(x, y), new Carnivore(new Position(x, y), 2, 10, 3));
-                } else if (number >= 96 && number < 100) {
+                } // else if (number >= 91 && number < 96) {
+                    // WorldMap.put(new Position(x, y), new Carnivore(new Position(x, y), 2, 10, 3));}
+                  else if (number >= 96 && number < 100) {
                     WorldMap.put(new Position(x, y), new Rock(new Position(x, y)));
                 }
 

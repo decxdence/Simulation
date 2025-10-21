@@ -26,6 +26,12 @@ public abstract class Creature extends Entity {
         this.health = health;
     }
 
-    void makeMove(SimulationMap sim) {
+    public void moveTo(Position next, SimulationMap sim) {
+        sim.getWorldMap().remove(this.getPosition());
+        this.setPosition(next);
+        sim.getWorldMap().put(next, this);
+    }
+
+    public void makeMove(SimulationMap sim) {
     }
 }

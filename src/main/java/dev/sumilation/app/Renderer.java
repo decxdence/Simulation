@@ -29,4 +29,10 @@ public final class Renderer {
         if (e instanceof Rock) return "\u26F0";
         return "?";
     }
+
+    public void clearConsole() {
+        for (int i = 0; i < 50; i++) {
+        System.out.println();
+    }
+}
 }
