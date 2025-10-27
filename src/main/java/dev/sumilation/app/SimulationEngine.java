@@ -24,7 +24,7 @@ public class SimulationEngine {
         for (Entity e : snapshot) {
             if (e instanceof Creature c) {
                 Position p = c.planMove(simMap);
-                if (p != null && simMap.inBounds(p.x(), p.y()) && !p.equals(c.getPosition())) {
+                if (p != null && simMap.inBounds(p.x(), p.y())) {
                     planned.put(c, p);
                 }
             }
@@ -65,10 +65,16 @@ public class SimulationEngine {
                 continue;
             }
 
-            Entity occ = startOcc.get(target);
-            if (occ instanceof Creature) {
-                if (c instanceof Herbivore) continue;
-                if (c instanceof Predator && !(occ instanceof Herbivore)) continue;
+            Entity occ = simMap.getEntityAt(target);
+            if (c instanceof Herbivore && occ instanceof Creature) {
+                continue; // травоядное не идёт в занятое
+            }
+
+            if (c instanceof Predator) {
+                // хищник идёт только если в клетке либо пусто, либо овца
+                if (occ != null && !(occ instanceof Herbivore)) {
+                    continue;
+                }
             }
 
 
@@ -80,10 +86,8 @@ public class SimulationEngine {
         void nextTurn () {
 
         }
-
         void startSimulation () {
         }
-
         void stopSimulation () {
         }
     }

@@ -5,12 +5,18 @@ import dev.sumilation.domain.entity.Entity;
 import dev.sumilation.domain.entity.geometry.Direction;
 import dev.sumilation.domain.entity.geometry.Position;
 import dev.sumilation.domain.object.Grass;
+import dev.sumilation.domain.pathfinding.BFSPathFinder;
+import dev.sumilation.domain.pathfinding.PathFinder;
+import dev.sumilation.domain.pathfinding.PathResult;
 
 import java.util.*;
+import java.util.function.Predicate;
 
 public abstract class Creature extends Entity {
     private final int speed;
     private int health;
+    private final PathFinder pathFinder = new BFSPathFinder();
+
 
     public Creature(Position position, int speed, int health) {
         super(position);
@@ -30,92 +36,46 @@ public abstract class Creature extends Entity {
         this.health = health;
     }
 
-    public void moveTo(Position next, SimulationMap sim) {
-        Entity current = sim.getEntityAt(next);
-
-        if (current != null && current != this && current instanceof Creature) {
-            return;
-        }
-
-        sim.getWorldMap().remove(this.getPosition());
-        this.setPosition(next);
-        sim.getWorldMap().put(next, this);
-    }
-
     public Position planMove(SimulationMap sim) {
-        Position res = bfsNextStep(sim);
-        if (res == null) {
-            // нет цели: можно вернуть null (стоим) или сделать 1 случайный шаг в доступного соседа
-        } else if (res.equals(getPosition())) {
-            System.out.println("[DBG] planMove returned START for " + this.getClass().getSimpleName() + " at " + getPosition());
-        }
-        return res;
+        Predicate<Position> goal = p -> isGoalForThis(p, sim);
+        Predicate<Position> pass = p -> isPassableForThis(p, sim);
 
+        PathResult pr = pathFinder.findPath(this.getPosition(), sim, goal, pass);
+        if (pr == null) return null;
+
+        List<Position> path = pr.path();
+        int dist = path.size() - 1;
+        if (dist <= 0) return null;
+
+        int k = Math.min(getSpeed(), dist);
+        return choosePlannedStep(path, k, sim);
     }
 
-    public Position bfsNextStep(SimulationMap sim) {
-        Deque<Position> initQueue = new ArrayDeque<>();
-        Set<Position> visited = new HashSet<>();
-        Map<Position, Position> parent = new HashMap<>();
-
-        Position start = this.getPosition();
-
-        initQueue.addLast(start);
-        visited.add(start);
-        parent.put(start, null);
-
-        Direction[] dirs = Direction.values();
-
-        while (!initQueue.isEmpty()) {
-            Position p = initQueue.pollFirst();
-
-            if (isGoalForThis(p, sim)) {
-                if (p.equals(start)) {
-                    return p;
-                } else {
-                    Position step = p;
-                    Position parentStep = parent.get(step);
-
-                    while (parentStep != null && !parentStep.equals(start)) {
-                        step = parentStep;
-                        parentStep = parent.get(step);
-                    }
-                    return step;
-                }
-            }
-
-            int x = p.x();
-            int y = p.y();
-
-
-            for (Direction dir : dirs) {
-
-                if (sim.inBounds(x + dir.dx, y + dir.dy)) {
-                    Position pos = new Position(x + dir.dx, y + dir.dy);
-                    if (isPassableForThis(pos, sim)) {
-                        if (visited.add(pos)) {
-                            parent.put(pos, p);
-                            initQueue.addLast(pos);
-                        }
-                    }
-                }
-            }
-        }
-        return null;
+    protected Position choosePlannedStep(List<Position> path, int k, SimulationMap sim) {
+        return path.get(k);
     }
 
-    protected void beforeEnter(Position target, SimulationMap sim) {}
+    protected void beforeEnter(Position target, SimulationMap sim) {
+    }
 
     public final void applyMove(Position next, SimulationMap sim) {
-        if (next.equals(this.getPosition())) return;
 
-        beforeEnter(next, sim);
+        if (next == null ) return;
 
-        sim.getWorldMap().remove(this.getPosition());
-        this.setPosition(next);
-        sim.getWorldMap().put(next, this);
 
-    }
+            beforeEnter(next, sim);
+
+
+            Entity after = sim.getEntityAt(next);
+            if (after != null && after != this && after instanceof Creature) {
+                return;
+            }
+
+
+            sim.getWorldMap().remove(this.getPosition());
+            this.setPosition(next);
+            sim.getWorldMap().put(next, this);
+        }
 
 
     protected abstract boolean isGoalForThis(Position p, SimulationMap sim);

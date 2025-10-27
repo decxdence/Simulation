@@ -8,7 +8,7 @@ public class Main {
     public static void main(String[] args) throws InterruptedException {
         SimulationMap sim1 = new SimulationMap(25, 5);
         Renderer r = new Renderer();
-         SimulationEngine se = new SimulationEngine(sim1);
+        SimulationEngine se = new SimulationEngine(sim1);
 
         while (true) {
             r.clearConsole();

@@ -21,7 +21,7 @@ public class SimulationMap {
         this.width = width;
         this.height = height;
 
-         initMap();
+        initMap();
         // initMap2();
 
     }
@@ -29,15 +29,12 @@ public class SimulationMap {
     public Map<Position, Entity> getWorldMap() {
         return worldMap;
     }
-
     public int getHeight() {
         return height;
     }
-
     public int getWidth() {
         return width;
     }
-
     public Entity getEntityAt(Position p) {
         return worldMap.get(p);
     }
@@ -56,7 +53,7 @@ public class SimulationMap {
                 } else if (number >= 84 && number < 91) {
                     worldMap.put(new Position(x, y), new Tree(new Position(x, y)));
                 } else if (number >= 91 && number < 96) {
-                    worldMap.put(new Position(x, y), new Predator(new Position(x, y), 2, 10, 3));}
+                    worldMap.put(new Position(x, y), new Predator(new Position(x, y), 3, 10, 3));}
                   else if (number >= 96 && number < 100) {
                     worldMap.put(new Position(x, y), new Rock(new Position(x, y)));
                 }
@@ -70,8 +67,8 @@ public class SimulationMap {
 
         // Карта 10x5 — удобна для отладки
         // Хищники
-        worldMap.put(new Position(0, 0), new Predator(new Position(0, 0), 2, 10, 3));
-        worldMap.put(new Position(9, 4), new Predator(new Position(9, 4), 2, 10, 3));
+        worldMap.put(new Position(0, 0), new Predator(new Position(0, 0), 3, 10, 3));
+        worldMap.put(new Position(9, 4), new Predator(new Position(9, 4), 3, 10, 3));
 
         // Травоядные — цели для волков
         worldMap.put(new Position(4, 0), new Herbivore(new Position(4, 0), 2, 10));
@@ -92,22 +89,19 @@ public class SimulationMap {
     public boolean inBounds(int x, int y) {
         return (0 <= x) && (x < width) && (0 <= y) && (y < height);
     }
-
     public boolean isPassableForHerbivore(Position p) {
         Entity e = getEntityAt(p);
         return e == null || (e instanceof Grass);
     }
-
     public boolean isPassableForPredator(Position p) {
         Entity e = getEntityAt(p);
-        return e == null || (e instanceof Grass) || (e instanceof Herbivore);
+        // было: return e == null || (e instanceof Grass) || (e instanceof Herbivore);
+        return e == null || (e instanceof Grass);
     }
-
     public boolean isGoalForHerbivore(Position p) {
         Entity e = getEntityAt(p);
         return e instanceof Grass;
     }
-
     public boolean isGoalForPredator(Position p) {
         Entity e = getEntityAt(p);
         return e instanceof Herbivore;
