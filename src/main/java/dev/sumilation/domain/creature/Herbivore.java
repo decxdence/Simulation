@@ -20,6 +20,7 @@ public class Herbivore extends Creature {
         Entity e = sim.getEntityAt(target);
         if (e instanceof Grass) {
             sim.getWorldMap().remove(target);
+            this.setHealth(this.getHealth() + 2);
         }
     }
 }

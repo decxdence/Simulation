@@ -16,6 +16,17 @@ public class SimulationEngine {
     }
 
     public void makeTurn() {
+        // 0) Фаза голода — единая для всех
+        List<Entity> units = new ArrayList<>(simMap.getWorldMap().values());
+        for (Entity e : units) {
+            if (e instanceof Creature c) {
+                c.setHealth(c.getHealth() - 1);
+                if (c.getHealth() <= 0) {
+                    simMap.getWorldMap().remove(c.getPosition());
+                }
+            }
+        }
+
         // Создаем копию карты. (Чтобы не менять реальную карту во избежание ошибок).
         List<Entity> snapshot = new ArrayList<>(simMap.getWorldMap().values());
 
@@ -80,7 +91,23 @@ public class SimulationEngine {
 
             c.applyMove(target, simMap);
             moved.add(c);
+
+
         }
+
+        System.out.println("== HP овец на данный момент ==");
+        simMap.getWorldMap().values().stream()
+                .filter(eboy -> eboy instanceof Herbivore)
+                .map(eboy -> (Herbivore) eboy)
+                .forEach(h -> System.out.printf("🐑 at %s → HP: %d%n", h.getPosition(), h.getHealth()));
+        System.out.println();
+
+        System.out.println("== HP волков на данный момент ==");
+        simMap.getWorldMap().values().stream()
+                .filter(eboy -> eboy instanceof Predator)
+                .map(eboy -> (Predator) eboy)
+                .forEach(p -> System.out.printf("\uD83D\uDC3A at %s → HP: %d%n", p.getPosition(), p.getHealth()));
+        System.out.println();
     }
 
         void nextTurn () {

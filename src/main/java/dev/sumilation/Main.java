@@ -11,10 +11,10 @@ public class Main {
         SimulationEngine se = new SimulationEngine(sim1);
 
         while (true) {
-            r.clearConsole();
-            r.printMap(sim1);
             se.makeTurn();
-            Thread.sleep(1500 ); // задержка 0.5 сек
+            r.printMap(sim1);
+            r.clearConsole();
+            Thread.sleep(150 ); // задержка 0.5 сек
         }
 
 

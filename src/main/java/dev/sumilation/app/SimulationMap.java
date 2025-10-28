@@ -21,8 +21,8 @@ public class SimulationMap {
         this.width = width;
         this.height = height;
 
-        initMap();
-        // initMap2();
+        // initMap();
+        initMap2();
 
     }
 

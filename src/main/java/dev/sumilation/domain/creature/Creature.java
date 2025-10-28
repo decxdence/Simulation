@@ -41,6 +41,7 @@ public abstract class Creature extends Entity {
         Predicate<Position> pass = p -> isPassableForThis(p, sim);
 
         PathResult pr = pathFinder.findPath(this.getPosition(), sim, goal, pass);
+
         if (pr == null) return null;
 
         List<Position> path = pr.path();
@@ -62,15 +63,12 @@ public abstract class Creature extends Entity {
 
         if (next == null ) return;
 
+        beforeEnter(next, sim);
 
-            beforeEnter(next, sim);
-
-
-            Entity after = sim.getEntityAt(next);
+        Entity after = sim.getEntityAt(next);
             if (after != null && after != this && after instanceof Creature) {
                 return;
             }
-
 
             sim.getWorldMap().remove(this.getPosition());
             this.setPosition(next);

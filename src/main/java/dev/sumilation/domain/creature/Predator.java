@@ -35,16 +35,13 @@ public class Predator extends Creature {
     @Override protected boolean isPassableForThis(Position p, SimulationMap sim) { return sim.isPassableForPredator(p); }
     @Override protected void beforeEnter(Position target, SimulationMap sim) {
         Entity e = sim.getEntityAt(target);
+
         if (e instanceof Herbivore herb) {
-
-            if (herb.getHealth() <= this.getAttackPower()) {
-
-                sim.getWorldMap().remove(target);
-
-            } else {
-
-                herb.setHealth(herb.getHealth() - this.getAttackPower());
-            }
+            herb.setHealth(herb.getHealth() - this.getAttackPower());
+                if (herb.getHealth() <= 0) {
+                    sim.getWorldMap().remove(target);
+                    this.setHealth(this.getHealth() + 3);
+                }
         } else if (e instanceof Grass) {
             sim.getWorldMap().remove(target);
         }
