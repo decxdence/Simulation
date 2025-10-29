@@ -16,14 +16,17 @@ public class SimulationMap {
     private final int width;
     private final int height;
     private final Map<Position, Entity> worldMap = new HashMap<>();
+    private final SimulationConfig cfg;     // ← конфиг
+    private final Random rand = new Random();
 
-    public SimulationMap(int width, int height) {
+    public SimulationMap(int width, int height, SimulationConfig cfg) {
         this.width = width;
         this.height = height;
-
+        this.cfg = cfg;
         initMap();
-        // initMap2();
-
+    }
+    public SimulationMap(int width, int height) {
+        this(width, height, new SimulationConfig());
     }
 
     public Map<Position, Entity> getWorldMap() {
@@ -40,23 +43,35 @@ public class SimulationMap {
     }
 
     public void initMap() {
-        Random rand = new Random();
+        worldMap.clear();
+
+        // Пороговые интервалы по процентам из cfg
+        // Пустые клетки = остаток до 100
+        int grassEnd     = 30 + cfg.grassChance;                       // пусто ~30%
+        int herbEnd      = grassEnd + cfg.herbivoreChance;
+        int predEnd      = herbEnd  + cfg.predatorChance;
+        int treeEnd      = predEnd  + cfg.treeChance;
+        int rockEnd      = treeEnd  + cfg.rockChance;
+
         for (int y = 0; y < this.height; y++) {
             for (int x = 0; x < this.width; x++) {
-                int number = rand.nextInt(100) + 1; // 1..100
+                int r = rand.nextInt(100) + 1; // 1..100
+                Position p = new Position(x, y);
 
-                if (number <= 30) { // 30% пусто
-                    // none
-                } else if (number <= 70) { // +40% трава
-                    worldMap.put(new Position(x, y), new Grass(new Position(x, y)));
-                } else if (number <= 82) { // +12% овцы
-                    worldMap.put(new Position(x, y), new Herbivore(new Position(x, y), 2, 10));
-                } else if (number <= 88) { // +6% волки
-                    worldMap.put(new Position(x, y), new Predator(new Position(x, y), 3, 10, 3));
-                } else if (number <= 95) { // +7% деревья
-                    worldMap.put(new Position(x, y), new Tree(new Position(x, y)));
-                } else { // остаток 5% камни
-                    worldMap.put(new Position(x, y), new Rock(new Position(x, y)));
+                if (r <= 30) {
+                    // пусто ~30%
+                } else if (r <= grassEnd) {
+                    worldMap.put(p, new Grass(p));
+                } else if (r <= herbEnd) {
+                    worldMap.put(p, new Herbivore(p, cfg.herbivoreSpeed, cfg.herbivoreStartHP));
+                } else if (r <= predEnd) {
+                    worldMap.put(p, new Predator(p, cfg.predatorSpeed, cfg.predatorStartHP, cfg.predatorAttackPower));
+                } else if (r <= treeEnd) {
+                    worldMap.put(p, new Tree(p));
+                } else if (r <= rockEnd) {
+                    worldMap.put(p, new Rock(p));
+                } else {
+                    // если суммы процентов < 70 (вдруг менял cfg) — остаток тоже пусто
                 }
             }
         }

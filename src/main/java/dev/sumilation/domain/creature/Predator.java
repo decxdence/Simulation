@@ -16,7 +16,7 @@ import java.util.Optional;
 
 public class Predator extends Creature {
     private final int attackPower;
-    public int reproThreshold() { return 30; }
+    public int reproThreshold() { return 25; }
 
     public Predator(Position position, int speed, int health, int attackPower) {
         super(position, speed, health);
@@ -63,7 +63,7 @@ public class Predator extends Creature {
 
             Position pos = new Position(nx, ny);
             if (sim.getEntityAt(pos) == null) {
-                return Optional.of(new Predator(pos, /*speed*/ 3, /*HP*/ cfg.predatorBabyHp, /*attack*/ 3));
+                return Optional.of(new Predator(pos, 3, cfg.predatorBabyHp, 8));
             }
         }
         return Optional.empty();

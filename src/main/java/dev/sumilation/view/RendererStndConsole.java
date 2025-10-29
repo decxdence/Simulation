@@ -1,5 +1,6 @@
-package dev.sumilation.app;
+package dev.sumilation.view;
 
+import dev.sumilation.app.SimulationMap;
 import dev.sumilation.domain.creature.Creature;
 import dev.sumilation.domain.creature.Predator;
 import dev.sumilation.domain.creature.Herbivore;
@@ -12,7 +13,7 @@ import dev.sumilation.domain.object.Tree;
 import java.util.HashMap;
 import java.util.Map;
 
-public final class Renderer {
+public final class RendererStndConsole {
     public void printMap(SimulationMap sim) {
         Map<Position, Creature> creatures = new HashMap<>();
         for (Entity e : sim.getWorldMap().values()) {

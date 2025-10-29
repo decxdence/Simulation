@@ -36,7 +36,7 @@ public class Herbivore extends Creature {
 
             Position pos = new Position(nx, ny);
             if (sim.getEntityAt(pos) == null) {
-                return Optional.of(new Herbivore(pos, /*speed*/ 2, /*HP*/ cfg.herbivoreBabyHp));
+                return Optional.of(new Herbivore(pos,  2, cfg.herbivoreBabyHp));
             }
         }
         return Optional.empty();
