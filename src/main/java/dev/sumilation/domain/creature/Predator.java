@@ -1,5 +1,6 @@
 package dev.sumilation.domain.creature;
 
+import dev.sumilation.app.SimulationConfig;
 import dev.sumilation.app.SimulationMap;
 import dev.sumilation.domain.entity.Entity;
 import dev.sumilation.domain.entity.geometry.Direction;
@@ -38,22 +39,20 @@ public class Predator extends Creature {
 
     @Override protected boolean isGoalForThis(Position p, SimulationMap sim) { return sim.isGoalForPredator(p); }
     @Override protected boolean isPassableForThis(Position p, SimulationMap sim) { return sim.isPassableForPredator(p); }
-    @Override protected void beforeEnter(Position target, SimulationMap sim) {
+    @Override protected void beforeEnter(Position target, dev.sumilation.app.SimulationMap sim) {
         Entity e = sim.getEntityAt(target);
 
         if (e instanceof Herbivore herb) {
             herb.setHealth(herb.getHealth() - this.getAttackPower());
-                if (herb.getHealth() <= 0) {
-                    sim.getWorldMap().remove(target);
-                    this.setHealth(this.getHealth() + 3);
-                }
+            if (herb.getHealth() <= 0) {
+                sim.getWorldMap().remove(target);
+                this.setHealth(this.getHealth() + new SimulationConfig().predatorKillBonusHp); // +3
+            }
         } else if (e instanceof Grass) {
             sim.getWorldMap().remove(target);
         }
     }
-    @Override public Optional<Entity> tryMakeOffspring(SimulationMap sim) {
-        if (this.getHealth() < reproThreshold()) return Optional.empty();
-
+    @Override public Optional<Entity> tryMakeOffspring(SimulationMap sim, SimulationConfig cfg) {
         List<Direction> dirs = new ArrayList<>(List.of(Direction.values()));
         Collections.shuffle(dirs);
 
@@ -63,11 +62,10 @@ public class Predator extends Creature {
             if (!sim.inBounds(nx, ny)) continue;
 
             Position pos = new Position(nx, ny);
-            if (sim.getEntityAt(pos) != null) continue;
-
-            return Optional.of(new Predator(pos, 3, 4, 3));
+            if (sim.getEntityAt(pos) == null) {
+                return Optional.of(new Predator(pos, /*speed*/ 3, /*HP*/ cfg.predatorBabyHp, /*attack*/ 3));
+            }
         }
-
         return Optional.empty();
     }
 }

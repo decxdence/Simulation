@@ -1,5 +1,6 @@
 package dev.sumilation.domain.creature;
 
+import dev.sumilation.app.SimulationConfig;
 import dev.sumilation.app.SimulationMap;
 import dev.sumilation.domain.entity.Entity;
 import dev.sumilation.domain.entity.geometry.Direction;
@@ -17,11 +18,6 @@ public abstract class Creature extends Entity {
     private int health;
     private final PathFinder pathFinder = new BFSPathFinder();
     private int reproCooldown = 0;
-    public int reproCost() { return 10; }
-    public int reproThreshold() { return 20; }
-    public boolean canReproduce() {
-        return this.getHealth() >= reproThreshold() && reproCooldown == 0;
-    }
 
 
     public Creature(Position position, int speed, int health) {
@@ -45,12 +41,13 @@ public abstract class Creature extends Entity {
     public void setHealth(int health) {
         this.health = health;
     }
-
     public void decrementReproCooldown() {
         if (reproCooldown > 0) reproCooldown--;
     }
 
-    public Optional<Entity> tryMakeOffspring(SimulationMap sim) { return Optional.empty(); }
+    public Optional<Entity> tryMakeOffspring(SimulationMap sim, SimulationConfig cfg) {
+        return Optional.empty(); // базовая реализация по умолчанию
+    }
 
     public Position planMove(SimulationMap sim) {
         Predicate<Position> goal = p -> isGoalForThis(p, sim);
