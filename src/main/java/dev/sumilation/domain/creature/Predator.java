@@ -2,15 +2,20 @@ package dev.sumilation.domain.creature;
 
 import dev.sumilation.app.SimulationMap;
 import dev.sumilation.domain.entity.Entity;
+import dev.sumilation.domain.entity.geometry.Direction;
 import dev.sumilation.domain.entity.geometry.Position;
 import dev.sumilation.domain.object.Grass;
 
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 
 public class Predator extends Creature {
     private final int attackPower;
+    public int reproThreshold() { return 30; }
 
     public Predator(Position position, int speed, int health, int attackPower) {
         super(position, speed, health);
@@ -45,5 +50,24 @@ public class Predator extends Creature {
         } else if (e instanceof Grass) {
             sim.getWorldMap().remove(target);
         }
+    }
+    @Override public Optional<Entity> tryMakeOffspring(SimulationMap sim) {
+        if (this.getHealth() < reproThreshold()) return Optional.empty();
+
+        List<Direction> dirs = new ArrayList<>(List.of(Direction.values()));
+        Collections.shuffle(dirs);
+
+        Position p = this.getPosition();
+        for (Direction d : dirs) {
+            int nx = p.x() + d.dx, ny = p.y() + d.dy;
+            if (!sim.inBounds(nx, ny)) continue;
+
+            Position pos = new Position(nx, ny);
+            if (sim.getEntityAt(pos) != null) continue;
+
+            return Optional.of(new Predator(pos, 3, 4, 3));
+        }
+
+        return Optional.empty();
     }
 }

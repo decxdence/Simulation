@@ -21,8 +21,8 @@ public class SimulationMap {
         this.width = width;
         this.height = height;
 
-        // initMap();
-        initMap2();
+        initMap();
+        // initMap2();
 
     }
 
@@ -43,21 +43,21 @@ public class SimulationMap {
         Random rand = new Random();
         for (int y = 0; y < this.height; y++) {
             for (int x = 0; x < this.width; x++) {
-                int number = rand.nextInt(100) + 1;
-                if (number > 1 && number < 40) {
+                int number = rand.nextInt(100) + 1; // 1..100
 
-                } else if (number >= 40 && number < 70) {
+                if (number <= 30) { // 30% пусто
+                    // none
+                } else if (number <= 70) { // +40% трава
                     worldMap.put(new Position(x, y), new Grass(new Position(x, y)));
-                } else if (number >= 70 && number < 84) {
+                } else if (number <= 82) { // +12% овцы
                     worldMap.put(new Position(x, y), new Herbivore(new Position(x, y), 2, 10));
-                } else if (number >= 84 && number < 91) {
+                } else if (number <= 88) { // +6% волки
+                    worldMap.put(new Position(x, y), new Predator(new Position(x, y), 3, 10, 3));
+                } else if (number <= 95) { // +7% деревья
                     worldMap.put(new Position(x, y), new Tree(new Position(x, y)));
-                } else if (number >= 91 && number < 96) {
-                    worldMap.put(new Position(x, y), new Predator(new Position(x, y), 3, 10, 3));}
-                  else if (number >= 96 && number < 100) {
+                } else { // остаток 5% камни
                     worldMap.put(new Position(x, y), new Rock(new Position(x, y)));
                 }
-
             }
         }
     }

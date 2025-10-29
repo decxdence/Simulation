@@ -14,7 +14,7 @@ public class Main {
             se.makeTurn();
             r.printMap(sim1);
             r.clearConsole();
-            Thread.sleep(150 ); // задержка 0.5 сек
+            Thread.sleep(1500); // задержка 0.5 сек
         }
 
 

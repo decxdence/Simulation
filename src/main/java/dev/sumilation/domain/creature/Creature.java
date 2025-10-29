@@ -16,6 +16,12 @@ public abstract class Creature extends Entity {
     private final int speed;
     private int health;
     private final PathFinder pathFinder = new BFSPathFinder();
+    private int reproCooldown = 0;
+    public int reproCost() { return 10; }
+    public int reproThreshold() { return 20; }
+    public boolean canReproduce() {
+        return this.getHealth() >= reproThreshold() && reproCooldown == 0;
+    }
 
 
     public Creature(Position position, int speed, int health) {
@@ -24,17 +30,27 @@ public abstract class Creature extends Entity {
         this.health = health;
     }
 
+    public int getReproCooldown() {
+        return reproCooldown;
+    }
+    public void setReproCooldown(int reproCooldown) {
+        this.reproCooldown = reproCooldown;
+    }
     public int getSpeed() {
         return speed;
     }
-
     public int getHealth() {
         return health;
     }
-
     public void setHealth(int health) {
         this.health = health;
     }
+
+    public void decrementReproCooldown() {
+        if (reproCooldown > 0) reproCooldown--;
+    }
+
+    public Optional<Entity> tryMakeOffspring(SimulationMap sim) { return Optional.empty(); }
 
     public Position planMove(SimulationMap sim) {
         Predicate<Position> goal = p -> isGoalForThis(p, sim);
@@ -73,6 +89,7 @@ public abstract class Creature extends Entity {
             sim.getWorldMap().remove(this.getPosition());
             this.setPosition(next);
             sim.getWorldMap().put(next, this);
+
         }
 
 

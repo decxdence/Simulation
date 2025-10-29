@@ -2,6 +2,7 @@ package dev.sumilation.domain.creature;
 
 import dev.sumilation.app.SimulationMap;
 import dev.sumilation.domain.entity.Entity;
+import dev.sumilation.domain.entity.geometry.Direction;
 import dev.sumilation.domain.entity.geometry.Position;
 import dev.sumilation.domain.object.Grass;
 
@@ -22,6 +23,25 @@ public class Herbivore extends Creature {
             sim.getWorldMap().remove(target);
             this.setHealth(this.getHealth() + 2);
         }
+    }
+    @Override public Optional<Entity> tryMakeOffspring(SimulationMap sim) {
+        if (this.getHealth() < reproThreshold()) return Optional.empty();
+
+        List<Direction> dirs = new ArrayList<>(List.of(Direction.values()));
+        Collections.shuffle(dirs);
+
+        Position p = this.getPosition();
+        for (Direction d : dirs) {
+            int nx = p.x() + d.dx, ny = p.y() + d.dy;
+            if (!sim.inBounds(nx, ny)) continue;
+
+            Position pos = new Position(nx, ny);
+            if (sim.getEntityAt(pos) != null) continue;
+
+            return Optional.of(new Herbivore(pos, 2, 4));
+        }
+
+        return Optional.empty();
     }
 }
 
