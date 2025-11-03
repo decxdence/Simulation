@@ -63,7 +63,7 @@ public class Predator extends Creature {
 
             Position pos = new Position(nx, ny);
             if (sim.getEntityAt(pos) == null) {
-                return Optional.of(new Predator(pos, 3, cfg.predatorBabyHp, 8));
+                return Optional.of(new Predator(pos, cfg.predatorSpeed, cfg.predatorBabyHp, cfg.predatorAttackPower));
             }
         }
         return Optional.empty();

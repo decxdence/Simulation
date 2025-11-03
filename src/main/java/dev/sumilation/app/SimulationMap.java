@@ -77,30 +77,6 @@ public class SimulationMap {
         }
     }
 
-    public void initMap2() {
-        worldMap.clear();
-
-        // Карта 10x5 — удобна для отладки
-        // Хищники
-        worldMap.put(new Position(0, 0), new Predator(new Position(0, 0), 3, 10, 3));
-        worldMap.put(new Position(9, 4), new Predator(new Position(9, 4), 3, 10, 3));
-
-        // Травоядные — цели для волков
-        worldMap.put(new Position(4, 0), new Herbivore(new Position(4, 0), 2, 10));
-        worldMap.put(new Position(5, 4), new Herbivore(new Position(5, 4), 2, 10));
-        worldMap.put(new Position(2, 2), new Herbivore(new Position(2, 2), 2, 10));
-
-        // Трава — проверка на совместное нахождение
-        worldMap.put(new Position(3, 0), new Grass(new Position(3, 0)));
-        worldMap.put(new Position(6, 3), new Grass(new Position(6, 3)));
-        worldMap.put(new Position(1, 4), new Grass(new Position(1, 4)));
-
-        // Препятствия
-        worldMap.put(new Position(5, 1), new Rock(new Position(5, 1)));
-        worldMap.put(new Position(7, 2), new Tree(new Position(7, 2)));
-        worldMap.put(new Position(4, 3), new Tree(new Position(4, 3)));
-    }
-
     public boolean inBounds(int x, int y) {
         return (0 <= x) && (x < width) && (0 <= y) && (y < height);
     }
