@@ -12,19 +12,19 @@ import java.util.*;
 public final class VegetationSystem implements SystemPhase {
     @Override
     public void apply(SimulationMap sim, SimulationConfig cfg, Random rnd) {
-        List<Entity> snapshot = new ArrayList<>(sim.getWorldMap().values());
+        List<Entity> snapshot = sim.snapshotEntities();
         List<Grass> grasses = new ArrayList<>();
-        for (Entity e : snapshot) if (e instanceof Grass g) grasses.add(g);
+        for (Entity entity : snapshot) if (entity instanceof Grass grass) grasses.add(grass);
 
         Set<Position> toPlant = new HashSet<>();
 
         // локальное распространение
-        for (Grass g : grasses) {
-            Position p = g.getPosition();
+        for (Grass grass : grasses) {
+            Position p = grass.getPosition();
             int planted = 0;
-            for (Direction d : Direction.values()) {
+            for (Direction dir : Direction.values()) {
                 if (planted >= cfg.grassMaxNeighborPlants) break;
-                int nx = p.x() + d.dx, ny = p.y() + d.dy;
+                int nx = p.x() + dir.dx, ny = p.y() + dir.dy;
                 if (!sim.inBounds(nx, ny)) continue;
 
                 Position pos = new Position(nx, ny);
@@ -49,7 +49,7 @@ public final class VegetationSystem implements SystemPhase {
 
         for (Position pos : toPlant) {
             if (sim.getEntityAt(pos) == null) {
-                sim.getWorldMap().put(pos, new Grass(pos));
+                sim.putAt(pos, new Grass(pos));
             }
         }
     }

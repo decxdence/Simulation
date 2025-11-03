@@ -5,7 +5,6 @@ import dev.sumilation.domain.system.HungerSystem;
 import dev.sumilation.domain.system.MovementSystem;
 import dev.sumilation.domain.system.ReproductionSystem;
 import dev.sumilation.domain.system.VegetationSystem;
-import dev.sumilation.app.SimulationConfig;
 
 import java.util.*;
 
@@ -25,14 +24,7 @@ public class SimulationEngine {
     }
 
     public void makeTurn() {
-        for (SystemPhase s : pipeline) {
-            s.apply(simMap, cfg, rnd);
-        }
+        for (SystemPhase systemPhase : pipeline) systemPhase.apply(simMap, cfg, rnd);
     }
 
-
-
-    void nextTurn () {}
-    void startSimulation () {}
-    void stopSimulation () {}
-    }
+}

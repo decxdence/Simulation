@@ -15,26 +15,26 @@ public final class ReproductionSystem implements SystemPhase {
     public void apply(SimulationMap sim, SimulationConfig cfg, Random rnd) {
         List<Entity> spawns = new ArrayList<>();
 
-        List<Entity> adults = new ArrayList<>(sim.getWorldMap().values());
-        for (Entity e : adults) {
-            if (!(e instanceof Creature c)) continue;
+        List<Entity> adults = sim.snapshotEntities();
+        for (Entity entity : adults) {
+            if (!(entity instanceof Creature creature)) continue;
 
-            c.decrementReproCooldown();
+            creature.decrementReproCooldown();
 
-            if (c instanceof Herbivore h) {
-                if (h.getHealth() >= cfg.herbivoreReproThreshold && h.getReproCooldown() == 0) {
-                    h.tryMakeOffspring(sim, cfg).ifPresent(child -> {
+            if (creature instanceof Herbivore herbivore) {
+                if (herbivore.getHealth() >= cfg.herbivoreReproThreshold && herbivore.getReproCooldown() == 0) {
+                    herbivore.tryMakeOffspring(sim, cfg).ifPresent(child -> {
                         spawns.add(child);
-                        h.setHealth(h.getHealth() - cfg.herbivoreReproCost);
-                        h.setReproCooldown(cfg.herbivoreReproCooldown);
+                        herbivore.setHealth(herbivore.getHealth() - cfg.herbivoreReproCost);
+                        herbivore.setReproCooldown(cfg.herbivoreReproCooldown);
                     });
                 }
-            } else if (c instanceof Predator p) {
-                if (p.getHealth() >= cfg.predatorReproThreshold && p.getReproCooldown() == 0) {
-                    p.tryMakeOffspring(sim, cfg).ifPresent(child -> {
+            } else if (creature instanceof Predator predator) {
+                if (predator.getHealth() >= cfg.predatorReproThreshold && predator.getReproCooldown() == 0) {
+                    predator.tryMakeOffspring(sim, cfg).ifPresent(child -> {
                         spawns.add(child);
-                        p.setHealth(p.getHealth() - cfg.predatorReproCost);
-                        p.setReproCooldown(cfg.predatorReproCooldown);
+                        predator.setHealth(predator.getHealth() - cfg.predatorReproCost);
+                        predator.setReproCooldown(cfg.predatorReproCooldown);
                     });
                 }
             }
@@ -43,7 +43,7 @@ public final class ReproductionSystem implements SystemPhase {
         for (Entity child : spawns) {
             Position pos = child.getPosition();
             if (sim.getEntityAt(pos) == null) {
-                sim.getWorldMap().put(pos, child);
+                sim.putAt(pos, child);
             }
         }
     }

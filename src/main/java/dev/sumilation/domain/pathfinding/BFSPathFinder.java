@@ -28,14 +28,14 @@ public final class BFSPathFinder implements PathFinder{
             Direction[] dirs = Direction.values();
 
             while (!initQueue.isEmpty()) {
-                Position p = initQueue.pollFirst();
+                Position position = initQueue.pollFirst();
 
-                if (isGoal.test(p)) {
-                    goal = p;
+                if (isGoal.test(position)) {
+                    goal = position;
                     break;
                 }
 
-                int x = p.x(), y = p.y();
+                int x = position.x(), y = position.y();
 
 
                 for (Direction dir : dirs) {
@@ -48,7 +48,7 @@ public final class BFSPathFinder implements PathFinder{
                     }
                     if (!visited.add(pos)) continue;
 
-                    parent.put(pos, p);
+                    parent.put(pos, position);
                     initQueue.addLast(pos);
                 }
             }

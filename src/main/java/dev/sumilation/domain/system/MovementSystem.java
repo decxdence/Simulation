@@ -14,55 +14,51 @@ public final class MovementSystem implements SystemPhase {
     @Override
     public void apply(SimulationMap sim, SimulationConfig cfg, Random rnd) {
         // 1) снимок
-        List<Entity> snapshot = new ArrayList<>(sim.getWorldMap().values());
+        List<Entity> snapshot = sim.snapshotEntities();
 
         // 2) планирование
         Map<Creature, Position> planned = new HashMap<>();
-        for (Entity e : snapshot) {
-            if (e instanceof Creature c) {
-                Position p = c.planMove(sim);
-                if (p != null && sim.inBounds(p.x(), p.y())) {
-                    planned.put(c, p);
+        for (Entity entity : snapshot) {
+            if (entity instanceof Creature creature) {
+                Position position = creature.planMove(sim);
+                if (position != null && sim.inBounds(position.x(), position.y())) {
+                    planned.put(creature, position);
                 }
             }
         }
 
         // 3) кто куда хочет
         Map<Position, List<Creature>> wishers = new HashMap<>();
-        for (var en : planned.entrySet()) {
-            wishers.computeIfAbsent(en.getValue(), k -> new ArrayList<>()).add(en.getKey());
+        for (var entry : planned.entrySet()) {
+            wishers.computeIfAbsent(entry.getValue(), k -> new ArrayList<>()).add(entry.getKey());
         }
 
         // 4) применение
         Set<Creature> moved = new HashSet<>();
 
-        for (var en : wishers.entrySet()) {
-            Position target = en.getKey();
-            List<Creature> list = en.getValue();
+        for (var entry : wishers.entrySet()) {
+            Position target = entry.getKey();
+            List<Creature> list = entry.getValue();
 
             if (list.size() != 1) Collections.shuffle(list, rnd);
 
-            Creature c = list.get(0);
-            if (moved.contains(c)) continue;
+            Creature creature = list.get(0);
+            if (moved.contains(creature)) continue;
 
-            Entity stillThere = sim.getWorldMap().get(c.getPosition());
-            if (stillThere != c) continue;
+            Entity stillThere = sim.getEntityAt(creature.getPosition());
+            if (stillThere != creature) continue;
 
-            Entity occ = sim.getEntityAt(target);
-            if (c instanceof Herbivore && occ instanceof Creature) continue;
+            Entity occupied = sim.getEntityAt(target);
+            if (creature instanceof Herbivore && occupied instanceof Creature) continue;
 
-            if (c instanceof Predator) {
-                if (occ != null && !(occ instanceof Herbivore || occ instanceof dev.sumilation.domain.object.Grass)) {
+            if (creature instanceof Predator) {
+                if (occupied != null && !(occupied instanceof Herbivore || occupied instanceof dev.sumilation.domain.object.Grass)) {
                     continue;
                 }
             }
 
-            c.applyMove(target, sim);
-            moved.add(c);
-
-            // уборка павших овец
-            sim.getWorldMap().entrySet().removeIf(e ->
-                    e.getValue() instanceof dev.sumilation.domain.creature.Herbivore h && h.getHealth() <= 0);
+            creature.applyMove(target, sim, cfg);
+            moved.add(creature);
         }
     }
 }

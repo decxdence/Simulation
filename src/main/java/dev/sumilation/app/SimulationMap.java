@@ -8,9 +8,7 @@ import dev.sumilation.domain.object.Grass;
 import dev.sumilation.domain.object.Rock;
 import dev.sumilation.domain.object.Tree;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 public class SimulationMap {
     private final int width;
@@ -29,17 +27,32 @@ public class SimulationMap {
         this(width, height, new SimulationConfig());
     }
 
-    public Map<Position, Entity> getWorldMap() {
-        return worldMap;
+    public Entity getEntityAt(Position position) {
+        return worldMap.get(position);
     }
+    public void putAt(Position position, Entity entity) {
+        if (entity == null) return;
+        entity.setPosition(position);
+        worldMap.put(position, entity);
+    }
+    public Entity removeAt(Position position) {
+        return worldMap.remove(position);
+    }
+    public void moveTo(Entity entity, Position position) {
+        worldMap.remove(entity.getPosition());
+        entity.setPosition(position);
+        worldMap.put(position, entity);
+    }
+    public List<Entity> snapshotEntities() {
+        return new ArrayList<>(worldMap.values());
+    }
+
+
     public int getHeight() {
         return height;
     }
     public int getWidth() {
         return width;
-    }
-    public Entity getEntityAt(Position p) {
-        return worldMap.get(p);
     }
 
     public void initMap() {
@@ -47,7 +60,8 @@ public class SimulationMap {
 
         // Пороговые интервалы по процентам из cfg
         // Пустые клетки = остаток до 100
-        int grassEnd     = 30 + cfg.grassChance;                       // пусто ~30%
+        int voidChance = 30; // Шанс спавна пустой клетки
+        int grassEnd     = voidChance + cfg.grassChance;                       // пусто ~30%
         int herbEnd      = grassEnd + cfg.herbivoreChance;
         int predEnd      = herbEnd  + cfg.predatorChance;
         int treeEnd      = predEnd  + cfg.treeChance;
@@ -58,7 +72,7 @@ public class SimulationMap {
                 int r = rand.nextInt(100) + 1; // 1..100
                 Position p = new Position(x, y);
 
-                if (r <= 30) {
+                if (r <= voidChance) {
                     // пусто ~30%
                 } else if (r <= grassEnd) {
                     worldMap.put(p, new Grass(p));

@@ -12,12 +12,12 @@ import java.util.Random;
 public final class HungerSystem implements SystemPhase {
     @Override
     public void apply(SimulationMap sim, SimulationConfig cfg, Random rnd) {
-        List<Entity> units = new ArrayList<>(sim.getWorldMap().values());
-        for (Entity e : units) {
-            if (e instanceof Creature c) {
-                c.setHealth(c.getHealth() - cfg.hungerPerTick);
-                if (c.getHealth() <= 0) {
-                    sim.getWorldMap().remove(c.getPosition());
+        List<Entity> snapshot = sim.snapshotEntities();
+        for (Entity entity : snapshot) {
+            if (entity instanceof Creature creature) {
+                creature.setHealth(creature.getHealth() - cfg.hungerPerTick);
+                if (creature.getHealth() <= 0) {
+                    sim.removeAt(creature.getPosition());
                 }
             }
         }

@@ -3,7 +3,6 @@ package dev.sumilation.domain.creature;
 import dev.sumilation.app.SimulationConfig;
 import dev.sumilation.app.SimulationMap;
 import dev.sumilation.domain.entity.Entity;
-import dev.sumilation.domain.entity.geometry.Direction;
 import dev.sumilation.domain.entity.geometry.Position;
 import dev.sumilation.domain.object.Grass;
 
@@ -16,30 +15,17 @@ public class Herbivore extends Creature {
     }
 
 
-    @Override protected boolean isGoalForThis(Position p, SimulationMap sim) { return sim.isGoalForHerbivore(p); }
-    @Override protected boolean isPassableForThis(Position p, SimulationMap sim) { return sim.isPassableForHerbivore(p); }
-    @Override protected void beforeEnter(Position target, SimulationMap sim) {
-        Entity e = sim.getEntityAt(target);
-        if (e instanceof Grass) {
-            sim.getWorldMap().remove(target);
-            this.setHealth(this.getHealth() + new SimulationConfig().herbivoreEatGrassHp); // +2
+    @Override protected boolean isGoalForThis(Position position, SimulationMap sim) { return sim.isGoalForHerbivore(position); }
+    @Override protected boolean isPassableForThis(Position position, SimulationMap sim) { return sim.isPassableForHerbivore(position); }
+    @Override protected void beforeEnter(Position target, SimulationMap sim, SimulationConfig cfg) {
+        Entity entity = sim.getEntityAt(target);
+        if (entity instanceof Grass) {
+            sim.removeAt(target);
+            this.setHealth(this.getHealth() + cfg.herbivoreEatGrassHp); // +2
         }
     }
-    @Override public Optional<Entity> tryMakeOffspring(SimulationMap sim, SimulationConfig cfg) {
-        List<Direction> dirs = new ArrayList<>(List.of(Direction.values()));
-        Collections.shuffle(dirs);
-
-        Position p = this.getPosition();
-        for (Direction d : dirs) {
-            int nx = p.x() + d.dx, ny = p.y() + d.dy;
-            if (!sim.inBounds(nx, ny)) continue;
-
-            Position pos = new Position(nx, ny);
-            if (sim.getEntityAt(pos) == null) {
-                return Optional.of(new Herbivore(pos,  cfg.herbivoreSpeed, cfg.herbivoreBabyHp));
-            }
-        }
-        return Optional.empty();
+    @Override protected Creature createOffspring(Position pos, SimulationConfig cfg) {
+        return new Herbivore(pos, cfg.herbivoreSpeed, cfg.herbivoreBabyHp);
     }
 }
 

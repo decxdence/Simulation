@@ -5,7 +5,6 @@ import dev.sumilation.app.SimulationMap;
 import dev.sumilation.domain.entity.Entity;
 import dev.sumilation.domain.entity.geometry.Direction;
 import dev.sumilation.domain.entity.geometry.Position;
-import dev.sumilation.domain.object.Grass;
 import dev.sumilation.domain.pathfinding.BFSPathFinder;
 import dev.sumilation.domain.pathfinding.PathFinder;
 import dev.sumilation.domain.pathfinding.PathResult;
@@ -45,51 +44,62 @@ public abstract class Creature extends Entity {
         if (reproCooldown > 0) reproCooldown--;
     }
 
+    // Метод для размножения
     public Optional<Entity> tryMakeOffspring(SimulationMap sim, SimulationConfig cfg) {
-        return Optional.empty(); // базовая реализация по умолчанию
-    }
 
+        List<Direction> dirs = new ArrayList<>(List.of(Direction.values()));
+        Collections.shuffle(dirs);
+
+        Position position = this.getPosition();
+        for (Direction d : dirs) {
+            int nx = position.x() + d.dx, ny = position.y() + d.dy;
+            if (!sim.inBounds(nx, ny)) continue;
+
+            Position pos = new Position(nx, ny);
+            if (sim.getEntityAt(pos) == null) {
+                return Optional.of(createOffspring(pos, cfg));
+            }
+        }
+        return Optional.empty();
+    }
+    protected abstract Creature createOffspring(Position pos, SimulationConfig cfg);
+    // Планирование хода. Тут поиск пути
     public Position planMove(SimulationMap sim) {
         Predicate<Position> goal = p -> isGoalForThis(p, sim);
         Predicate<Position> pass = p -> isPassableForThis(p, sim);
 
-        PathResult pr = pathFinder.findPath(this.getPosition(), sim, goal, pass);
+        PathResult pathResult = pathFinder.findPath(this.getPosition(), sim, goal, pass);
 
-        if (pr == null) return null;
+        if (pathResult == null) return null;
 
-        List<Position> path = pr.path();
+        List<Position> path = pathResult.path();
         int dist = path.size() - 1;
         if (dist <= 0) return null;
 
         int k = Math.min(getSpeed(), dist);
         return choosePlannedStep(path, k, sim);
     }
-
     protected Position choosePlannedStep(List<Position> path, int k, SimulationMap sim) {
         return path.get(k);
     }
-
-    protected void beforeEnter(Position target, SimulationMap sim) {
-    }
-
-    public final void applyMove(Position next, SimulationMap sim) {
+    // Применение хода
+    public final void applyMove(Position next, SimulationMap sim, SimulationConfig cfg) {
 
         if (next == null ) return;
 
-        beforeEnter(next, sim);
+        beforeEnter(next, sim, cfg);
 
         Entity after = sim.getEntityAt(next);
-            if (after != null && after != this && after instanceof Creature) {
-                return;
-            }
-
-            sim.getWorldMap().remove(this.getPosition());
-            this.setPosition(next);
-            sim.getWorldMap().put(next, this);
-
+        if (after != null && after != this && after instanceof Creature) {
+            return;
         }
 
+        sim.moveTo(this, next);
 
-    protected abstract boolean isGoalForThis(Position p, SimulationMap sim);
-    protected abstract boolean isPassableForThis(Position p, SimulationMap sim);
+    }
+    protected void beforeEnter(Position target, SimulationMap sim, SimulationConfig cfg) {
+    }
+    // Проверка цели и препятствий
+    protected abstract boolean isGoalForThis(Position position, SimulationMap sim);
+    protected abstract boolean isPassableForThis(Position position, SimulationMap sim);
 }

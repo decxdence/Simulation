@@ -3,20 +3,16 @@ package dev.sumilation.domain.creature;
 import dev.sumilation.app.SimulationConfig;
 import dev.sumilation.app.SimulationMap;
 import dev.sumilation.domain.entity.Entity;
-import dev.sumilation.domain.entity.geometry.Direction;
 import dev.sumilation.domain.entity.geometry.Position;
 import dev.sumilation.domain.object.Grass;
 
 
-import java.util.ArrayList;
-import java.util.Collections;
+
 import java.util.List;
-import java.util.Optional;
 
 
 public class Predator extends Creature {
     private final int attackPower;
-    public int reproThreshold() { return 25; }
 
     public Predator(Position position, int speed, int health, int attackPower) {
         super(position, speed, health);
@@ -37,35 +33,22 @@ public class Predator extends Creature {
         return path.get(k);                  // обычный шаг
     }
 
-    @Override protected boolean isGoalForThis(Position p, SimulationMap sim) { return sim.isGoalForPredator(p); }
-    @Override protected boolean isPassableForThis(Position p, SimulationMap sim) { return sim.isPassableForPredator(p); }
-    @Override protected void beforeEnter(Position target, dev.sumilation.app.SimulationMap sim) {
-        Entity e = sim.getEntityAt(target);
+    @Override protected boolean isGoalForThis(Position position, SimulationMap sim) { return sim.isGoalForPredator(position); }
+    @Override protected boolean isPassableForThis(Position position, SimulationMap sim) { return sim.isPassableForPredator(position); }
+    @Override protected void beforeEnter(Position target, SimulationMap sim, SimulationConfig cfg) {
+        Entity entity = sim.getEntityAt(target);
 
-        if (e instanceof Herbivore herb) {
+        if (entity instanceof Herbivore herb) {
             herb.setHealth(herb.getHealth() - this.getAttackPower());
             if (herb.getHealth() <= 0) {
-                sim.getWorldMap().remove(target);
-                this.setHealth(this.getHealth() + new SimulationConfig().predatorKillBonusHp); // +3
+                sim.removeAt(target);
+                this.setHealth(this.getHealth() + cfg.predatorKillBonusHp); // +3
             }
-        } else if (e instanceof Grass) {
-            sim.getWorldMap().remove(target);
+        } else if (entity instanceof Grass) {
+            sim.removeAt(target);
         }
     }
-    @Override public Optional<Entity> tryMakeOffspring(SimulationMap sim, SimulationConfig cfg) {
-        List<Direction> dirs = new ArrayList<>(List.of(Direction.values()));
-        Collections.shuffle(dirs);
-
-        Position p = this.getPosition();
-        for (Direction d : dirs) {
-            int nx = p.x() + d.dx, ny = p.y() + d.dy;
-            if (!sim.inBounds(nx, ny)) continue;
-
-            Position pos = new Position(nx, ny);
-            if (sim.getEntityAt(pos) == null) {
-                return Optional.of(new Predator(pos, cfg.predatorSpeed, cfg.predatorBabyHp, cfg.predatorAttackPower));
-            }
-        }
-        return Optional.empty();
+    protected Creature createOffspring(Position pos, SimulationConfig cfg) {
+        return new Predator(pos, cfg.predatorSpeed, cfg.predatorBabyHp, cfg.predatorAttackPower);
     }
 }
